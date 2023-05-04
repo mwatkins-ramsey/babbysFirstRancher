@@ -1,0 +1,23 @@
+version: '3'
+services:
+  db:
+    container_name: hello_db
+    build:
+      context: ..
+      dockerfile: .build/MySQLDB/Dockerfile
+    ports:
+      - "8081:8081"
+  spring:
+    container_name: helloWebService
+    depends_on:
+      - db
+    build:
+      context: ..
+      dockerfile: .build/SpringApp/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      MYSQL_HOST: db
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+      MYSQL_DB: hello
