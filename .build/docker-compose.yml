@@ -1,23 +1,52 @@
 version: '3'
 services:
   db:
-    container_name: hello_db
+    restart: always
+    cap_add:
+      - SYS_NICE
+    env_file: ./.env
+    container_name: ${MYSQL_CONTAINER_NAME}
     build:
       context: ..
       dockerfile: .build/MySQLDB/Dockerfile
     ports:
+      - ${MYSQL_LOCAL_PORT}:${MYSQL_DOCKER_PORT}
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DB}
+  spring-test:
+    links:
+      - "db:${MYSQL_CONTAINER_NAME}"
+    container_name: helloWebServiceTests
+    env_file: ./.env
+    depends_on:
+      - db
+    build:
+      context: ..
+      dockerfile: .build/SpringAppTest/Dockerfile
+    ports:
       - "8081:8081"
+    environment:
+      MYSQL_HOST: db
+      SPRING_DATASOURCE_URL: "jdbc:mysql://${MYSQL_CONTAINER_NAME}/hello?useSSL=false&allowPublicKeyRetrieval=true"
+      SPRING_DATASOURCE_USERNAME: "${MYSQL_USER}"
+      SPRING_DATASOURCE_PASSWORD: "${MYSQL_PASSWORD}"
+      SPRING_HIBERNATE_DIALECT: "${SPRING_HIBERNATE_DIALECT}"
   spring:
+    links:
+      - "db:${MYSQL_CONTAINER_NAME}"
     container_name: helloWebService
+    env_file: ./.env
     depends_on:
       - db
     build:
       context: ..
       dockerfile: .build/SpringApp/Dockerfile
     ports:
-      - "8080:8080"
+      - ${SPRING_LOCAL_PORT}:${SPRING_DOCKER_PORT}
     environment:
       MYSQL_HOST: db
-      MYSQL_USER: root
-      MYSQL_PASSWORD: root
-      MYSQL_DB: hello
+      SPRING_DATASOURCE_URL: "jdbc:mysql://${MYSQL_CONTAINER_NAME}/hello?useSSL=false&allowPublicKeyRetrieval=true"
+      SPRING_DATASOURCE_USERNAME: "${MYSQL_USER}"
+      SPRING_DATASOURCE_PASSWORD: "${MYSQL_PASSWORD}"
+      SPRING_HIBERNATE_DIALECT: "${SPRING_HIBERNATE_DIALECT}"

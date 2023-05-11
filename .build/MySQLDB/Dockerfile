@@ -1,7 +1,5 @@
-FROM mysql:latest
-
-ENV MYSQL_ROOT_PASSWORD=root
+FROM mysql:8
 
 COPY .build/MySQLDB/database_helloMessages.sql /docker-entrypoint-initdb.d/
 
-EXPOSE 8081
+EXPOSE 8897
