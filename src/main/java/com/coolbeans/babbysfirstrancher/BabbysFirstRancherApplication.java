@@ -8,6 +8,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class BabbysFirstRancherApplication {
 
     public static void main(String[] args) {
+
+
         MDiagnostics.envDump();
         SpringApplication.run(BabbysFirstRancherApplication.class, args);
     }

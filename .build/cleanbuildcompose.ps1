@@ -4,11 +4,11 @@ if ($LastExitCode -ne 0) {
     exit $LastExitCode
 }
 docker-compose up db -d
-docker compose build spring --no-cache
+docker compose build spring --no-cache --progress=plain
 if ($LastExitCode -ne 0) {
     exit $LastExitCode
 }
-docker compose build spring-test --no-cache
+docker-compose build spring-test --no-cache --progress=plain
 if ($LastExitCode -ne 0) {
     exit $LastExitCode
 }
